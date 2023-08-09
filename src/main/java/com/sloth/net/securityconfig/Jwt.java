@@ -19,7 +19,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-
+import org.springframework.security.core.userdetails.User;
 @Component
 public class Jwt {
 	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -28,9 +28,10 @@ public class Jwt {
     private String key;
 	
 	//create token
-	public String generateToken(Users user) {
+	public String generateToken(Authentication auth) {
+		Users principal=(Users)auth.getPrincipal();
 		return Jwts.builder()
-		.setSubject(String.format("%s,%s", user.getUser_id(),user.getEmail()))
+		.setSubject(String.format("%s,%s", principal.getUser_id(),principal.getEmail()))
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
 		.signWith(SignatureAlgorithm.HS256, key)

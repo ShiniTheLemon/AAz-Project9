@@ -1,11 +1,13 @@
 package com.sloth.net.service;
 
-import java.util.Arrays;
+
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,18 +30,14 @@ public class CustomUsersDetailedService implements UserDetailsService {
 //			throw new UsernameNotFoundException("User does not exist");
 //		}
 		
+
 		
-		// why do i need to generate a list of the roles?
-		List<String> roles= Arrays.asList(user.getRole());
-		UserDetails userDetails=
-				org.springframework.security.core.userdetails.User.builder()
-				.username(user.getEmail())
-				.password(user.getPassword())
-				.roles(user.getRole())
-				.build();
-		return userDetails;
+        return new Users(user.getUser_id(),email,user.getPassword(), null);
+		
 		
 	}
-	
+    private Collection<? extends GrantedAuthority> getAuthorities(String user) {
+        return Collections.singletonList(new SimpleGrantedAuthority(user));
+    }
 	
 }

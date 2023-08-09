@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -18,10 +19,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sloth.net.entities.Users;
 
-@Component
+//@Component
 public class JwtFilter extends OncePerRequestFilter{
 @Autowired 
 private Jwt jwt;
+@Autowired
+UserDetailsService userDetails;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -77,9 +81,9 @@ private Jwt jwt;
 	private UserDetails getUserDetails(String token) {
 		Users user=new Users();
 		String[] jwtSubject=jwt.getSubject(token).split(",");
-		
+		//UserDetails user=userDetails.loadUserByUsername(jwtSubject[1]);
 		user.setUser_id(Integer.parseInt(jwtSubject[0]));
 		user.setEmail(jwtSubject[1]);
-		return user;
+		return null;
 	}
 }

@@ -22,6 +22,7 @@ public class Users implements UserDetails{
 	private String email;
 	private String password;
 	private String role;
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub

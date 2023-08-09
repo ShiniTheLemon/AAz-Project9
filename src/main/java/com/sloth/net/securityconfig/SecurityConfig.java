@@ -1,39 +1,35 @@
 package com.sloth.net.securityconfig;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import com.sloth.net.service.CustomUsersDetailedService;
+
+
+import com.sloth.net.repo.UserRepository;
+
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 	@Autowired
-	UserDetailsService userDetails;
-	@Autowired
-	JwtFilter jwtFilter;
+	UserRepository userRepo;
+//	@Autowired
+//	JwtFilter jwtFilter;
 	//might use this later
 //	@Bean
 //	public AuthenticationManager authenticationManagerBean(
@@ -46,6 +42,7 @@ public class SecurityConfig {
 //			      .build();
 //	}
 	
+
 	@Bean
 	public AuthenticationManager authManager(AuthenticationConfiguration authConfig) throws Exception {
 		return authConfig.getAuthenticationManager();
@@ -92,7 +89,7 @@ public class SecurityConfig {
       );
       
       // add custom jwt filter to filter chain
-	  http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	  //http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	   return http.build();
 	}
 
