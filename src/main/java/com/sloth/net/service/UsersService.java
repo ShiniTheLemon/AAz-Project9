@@ -7,4 +7,5 @@ import com.sloth.net.entities.Users;
 @Service
 public interface UsersService {
 	Users signUp(Users user);
+	void login(Users user);
 }

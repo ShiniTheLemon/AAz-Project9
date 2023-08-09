@@ -3,6 +3,10 @@ package com.sloth.net.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.sloth.net.entities.Users;
+import com.sloth.net.pojo.AuthRequest;
+import com.sloth.net.pojo.AuthResponse;
+import com.sloth.net.securityconfig.Jwt;
 import com.sloth.net.service.UsersService;
 
 @Controller
@@ -17,14 +24,35 @@ import com.sloth.net.service.UsersService;
 public class AuthController {
 	@Autowired
 	UsersService service;
+	@Autowired
+	Jwt jwt;
+	@Autowired
+	AuthenticationManager authManager;
+	
 	@RequestMapping(value="/login",method=RequestMethod.GET)
 	public String login() {
 		return "login";
 	}
 	
+	
+	//checks if user is authenticated then generates token
 	@PostMapping("/login2")
-	public ResponseEntity<Users> login2(@RequestBody Users user){
-		return null;
+	public ResponseEntity<?> login2( AuthRequest req){
+		try {
+			Authentication auth=authManager.authenticate(
+					new UsernamePasswordAuthenticationToken(
+							req.getEmail(),req.getPassword()));
+			
+			Users user =(Users)auth.getPrincipal();
+			String accessToken=jwt.generateToken(user);
+			AuthResponse res=new AuthResponse(user.getEmail(),accessToken);
+		
+			return ResponseEntity.ok().body(res);
+			
+		}catch(BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		
 	}
 	
 	@RequestMapping(value="/signUp",method=RequestMethod.POST)

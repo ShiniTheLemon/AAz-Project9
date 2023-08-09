@@ -1,7 +1,9 @@
 package com.sloth.net.service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +22,14 @@ public class CustomUsersDetailedService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		// TODO Auto-generated method stub
-		Users user= userRepo.findUsersByEmail(email);
-		if(user==null) {
-			throw new UsernameNotFoundException("User does not exist");
-		}
+		Users user= userRepo.findUsersByEmail(email)
+				.orElseThrow(()-> new UsernameNotFoundException(email+" Is not a valid email"));
+//		if(user==null) {
+//			throw new UsernameNotFoundException("User does not exist");
+//		}
 		
+		
+		// why do i need to generate a list of the roles?
 		List<String> roles= Arrays.asList(user.getRole());
 		UserDetails userDetails=
 				org.springframework.security.core.userdetails.User.builder()
@@ -33,6 +38,8 @@ public class CustomUsersDetailedService implements UserDetailsService {
 				.roles(user.getRole())
 				.build();
 		return userDetails;
+		
 	}
-
+	
+	
 }

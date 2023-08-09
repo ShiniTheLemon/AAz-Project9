@@ -1,6 +1,10 @@
 package com.sloth.net.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +16,9 @@ public class UserServiceImp implements UsersService {
 UserRepository userRepo;
 @Autowired
 PasswordEncoder passwordEncoder;
+@Autowired
+AuthenticationManager authManager;
+
 	@Override
 	public Users signUp(Users user) {
 		// TODO Auto-generated method stub
@@ -23,6 +30,13 @@ PasswordEncoder passwordEncoder;
 	}
 	private String encodePassword(String Password) {
 		return passwordEncoder.encode(Password);
+	}
+	@Override
+	public void login(Users user) {
+		// TODO Auto-generated method stub
+		Authentication auth=authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail()
+				,user.getPassword()));
+		SecurityContextHolder.getContext().setAuthentication(auth);
 	}
 
 }
