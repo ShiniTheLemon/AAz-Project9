@@ -38,7 +38,7 @@ public class AuthController {
 	
 	//checks if user is authenticated then generates token
 	@PostMapping("/login2")
-	public ResponseEntity<?> login2( AuthRequest req){
+	public ResponseEntity<?> login2(@RequestBody AuthRequest req){
 		try {
 			Authentication auth=authManager.authenticate(
 					new UsernamePasswordAuthenticationToken(

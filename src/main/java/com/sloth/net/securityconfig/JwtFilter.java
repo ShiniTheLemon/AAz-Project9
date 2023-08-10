@@ -18,13 +18,13 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.sloth.net.entities.Users;
+import com.sloth.net.pojo.UsersJwt;
 
-//@Component
+@Component
 public class JwtFilter extends OncePerRequestFilter{
 @Autowired 
 private Jwt jwt;
-@Autowired
-UserDetailsService userDetails;
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -46,7 +46,7 @@ UserDetailsService userDetails;
 	}
 
 	
-	
+	//updates the security context
 	private void setAuthenticationContext(String token, HttpServletRequest request) {
 		// TODO Auto-generated method stub
 		UserDetails userDetails=getUserDetails(token);
@@ -59,7 +59,7 @@ UserDetailsService userDetails;
 		
 	}
 
-	
+	//gets the extracts the token
 	private String getAccessToken(HttpServletRequest request) {
 		// TODO Auto-generated method stub
 		String header=request.getHeader("Authorization");
@@ -67,7 +67,7 @@ UserDetailsService userDetails;
 		return token;
 	}
 
-	
+	//checks if request has an authorization bearer token
 	private boolean hasAuthorizationBearerToken(HttpServletRequest request) {
 		// TODO Auto-generated method stub
 		String header=request.getHeader("Authorization");
@@ -77,13 +77,13 @@ UserDetailsService userDetails;
 		return true;
 	}
 	
-	
+	//extracts the user id and email from the token
 	private UserDetails getUserDetails(String token) {
-		Users user=new Users();
+		UsersJwt user=new UsersJwt();
 		String[] jwtSubject=jwt.getSubject(token).split(",");
 		//UserDetails user=userDetails.loadUserByUsername(jwtSubject[1]);
 		user.setUser_id(Integer.parseInt(jwtSubject[0]));
 		user.setEmail(jwtSubject[1]);
-		return null;
+		return user;
 	}
 }

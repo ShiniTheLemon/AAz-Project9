@@ -18,7 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.sloth.net.repo.UserRepository;
 
@@ -28,8 +28,8 @@ import com.sloth.net.repo.UserRepository;
 public class SecurityConfig {
 	@Autowired
 	UserRepository userRepo;
-//	@Autowired
-//	JwtFilter jwtFilter;
+	@Autowired
+	JwtFilter jwtFilter;
 	//might use this later
 //	@Bean
 //	public AuthenticationManager authenticationManagerBean(
@@ -67,8 +67,8 @@ public class SecurityConfig {
 		http
 	  .csrf().disable()
       .authorizeHttpRequests()
-      .antMatchers("/auth/**","/api/**","/v2/api-docs", "/configuration/ui", 
-    		  "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", 
+      .antMatchers("/auth/**","/v3/api-docs", "/configuration/ui", 
+    		  "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", 
     		  "/webjars/**").permitAll()
       .anyRequest().authenticated();
 	  http
@@ -89,7 +89,7 @@ public class SecurityConfig {
       );
       
       // add custom jwt filter to filter chain
-	  //http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	  http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	   return http.build();
 	}
 

@@ -1,9 +1,10 @@
 package com.sloth.net.service;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.sloth.net.entities.Users;
+import com.sloth.net.pojo.UsersJwt;
 import com.sloth.net.repo.UserRepository;
 
 @Service
@@ -29,15 +31,12 @@ public class CustomUsersDetailedService implements UserDetailsService {
 //		if(user==null) {
 //			throw new UsernameNotFoundException("User does not exist");
 //		}
-		
-
-		
-        return new Users(user.getUser_id(),email,user.getPassword(), null);
+        List<GrantedAuthority> listAuthorities = new ArrayList<GrantedAuthority>();
+        listAuthorities.add(new SimpleGrantedAuthority(user.getRole()));
+        return new UsersJwt(user.getUser_id(),email, user.getPassword(), true, listAuthorities,user);
 		
 		
 	}
-    private Collection<? extends GrantedAuthority> getAuthorities(String user) {
-        return Collections.singletonList(new SimpleGrantedAuthority(user));
-    }
+
 	
 }

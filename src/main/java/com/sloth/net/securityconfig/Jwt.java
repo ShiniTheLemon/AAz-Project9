@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.sloth.net.entities.Users;
+import com.sloth.net.pojo.UsersJwt;
 
 import java.util.Date;
 
@@ -19,7 +20,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import org.springframework.security.core.userdetails.User;
+
 @Component
 public class Jwt {
 	private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -29,7 +30,7 @@ public class Jwt {
 	
 	//create token
 	public String generateToken(Authentication auth) {
-		Users principal=(Users)auth.getPrincipal();
+		UsersJwt principal=(UsersJwt)auth.getPrincipal();
 		return Jwts.builder()
 		.setSubject(String.format("%s,%s", principal.getUser_id(),principal.getEmail()))
         .setIssuedAt(new Date())
@@ -65,7 +66,7 @@ public class Jwt {
 		return parseClaims(token).getSubject();
 	}
 
-
+	//?
 	private Claims parseClaims(String token) {
 		// TODO Auto-generated method stub
 		return Jwts.parser()
