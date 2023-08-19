@@ -1,5 +1,6 @@
 package com.sloth.net.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,14 +62,15 @@ public class PostServiceImp implements PostService{
 	public List<Posts> showUserPosts(int user_id) {
 		// TODO Auto-generated method stub
 		List<Posts> postList=postRepo.findPostsByUserid(user_id);
-		return postList;
+		return filterPosts(postList);
 	}
 
 	@Override
 	public List<Posts> showAllPosts() {
 		// TODO Auto-generated method stub
 		List<Posts>postList=postRepo.findAll();
-		return postList;
+		
+		return filterPosts(postList);
 	}
 
 	@Override
@@ -110,7 +112,34 @@ public class PostServiceImp implements PostService{
 	public List<Comments> ShowAllComments(int post_id) {
 		// TODO Auto-generated method stub
 		List<Comments> commentList=commentRepo.findCommentsByPid(post_id);
-		return commentList;
+		return filterComments(commentList);
+	}
+	
+	
+	//checks every individual post then removes unpopular ones
+	private List<Posts>filterPosts(List<Posts>postList){
+		ArrayList<Posts>filteredList=new ArrayList<Posts>();
+		
+		for(int i=0;i<postList.size()-1;i++) {
+			Posts postObj=postList.get(i);
+			if(postObj.getDislikes()<postObj.getLikes()||postObj.getDislikes()==0) {
+				filteredList.add(postObj);
+			}
+		}
+	
+		return filteredList;
+	}
+	//checks every individual comments then removes unpopular ones
+	private List<Comments>filterComments(List<Comments>commentList){
+		ArrayList<Comments>filteredComments=new ArrayList<Comments>();
+		
+		for(int i=0;i<commentList.size()-1;i++) {
+			Comments commentObj=commentList.get(i);
+			if(commentObj.getLikes()>commentObj.getDislikes()||commentObj.getDislikes()==0) {
+				filteredComments.add(commentObj);
+			}
+		}
+		return filteredComments;
 	}
 
 }
