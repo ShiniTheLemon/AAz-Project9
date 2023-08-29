@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,9 +12,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Check_Messages {
+@Builder
+public class Chat_room {
 	@Id
-	private int cm_id;
-	private int sender_id;
-	private int recipient_id;
+	private int cr_id;
+	private String sr_id;
+	private int senderid;
+	private int recipientid;
 }
