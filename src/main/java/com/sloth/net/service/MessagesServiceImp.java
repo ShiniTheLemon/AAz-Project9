@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.provider.HibernateUtils;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,8 @@ public class MessagesServiceImp implements MessagesService{
 ChatRoomRepository chatRepo;
 @Autowired
 MeassagesRepository msgRepo;
+@Autowired
+private SessionFactory sessionFactory;
 	@Override
 	public Optional<String> getChatId(int senderId, int recipientId, boolean createIfNotExist) {
 		// TODO Auto-generated method stub
@@ -38,7 +44,7 @@ MeassagesRepository msgRepo;
                         return  Optional.empty();
                     }
                  //?   
-                var sr_id= String.format("%s_%s", senderId,recipientId);
+                    String  sr_id= String.format("%s_%s", senderId,recipientId);
                 
                Chat_room senderRecipient=Chat_room
             		   .builder()
@@ -77,8 +83,8 @@ MeassagesRepository msgRepo;
 	@Override
 	public List<Messages> findMessages(int senderId, int recipientId) {
 		// TODO Auto-generated method stub
-		var chatId=getChatId(senderId,recipientId,false);
-		var messages=chatId.map(msgid -> msgRepo.findByChatid(msgid)).orElse(new ArrayList<>());
+		Optional<String> chatId=getChatId(senderId,recipientId,false);
+		List<Messages>  messages=chatId.map(msgid -> msgRepo.findByChatid(msgid)).orElse(new ArrayList<>());
 		
 		
 		if(messages.size()>0) {
@@ -99,9 +105,24 @@ MeassagesRepository msgRepo;
 	@Override
 	public void updateMessageStatus(int senderId, int recipientId, MessageStatus status) {
 		// TODO Auto-generated method stub
-//		Session session = HibernateUtil.getHibernateSession();
-//		CriteriaBuilder cb = session.getCriteriaBuilder();
-//		CriteriaUpdate<Messages>criteraiUpdate=cb.createCriteriaUpdate(Messages.class);
+		Session session = sessionFactory.openSession();
+		Transaction trans = null;
+		try {
+			trans.begin();
+			Query query=session.createQuery(
+		            "UPDATE Messages c SET c.status = :status"
+		                    + " WHERE c.senderid = :senderid AND c.recipientid = :recipientid"
+		                );
+		                query.setParameter("senderid", senderId);
+		                query.setParameter("recipientid", recipientId);
+		                query.setParameter("status", status);
+		                query.executeUpdate();
+		}catch(HibernateException e) {
+	        if (trans != null) trans.rollback();
+	        throw e;
+	    } finally {
+	        session.close();
+	    }
                 
 	}}
 

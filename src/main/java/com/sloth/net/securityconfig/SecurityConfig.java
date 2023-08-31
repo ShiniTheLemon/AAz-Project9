@@ -69,7 +69,7 @@ public class SecurityConfig {
       .authorizeHttpRequests()
       .antMatchers("/auth/**","/v3/api-docs", "/configuration/ui", 
     		  "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", 
-    		  "/webjars/**").permitAll()
+    		  "/webjars/**","/xxx/**","/app/**","/user/**").permitAll()
       .anyRequest().authenticated();
 	  http
 	  .formLogin()

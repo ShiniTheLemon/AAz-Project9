@@ -1,6 +1,7 @@
 package com.sloth.net.entities;
 
 import java.sql.Time;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

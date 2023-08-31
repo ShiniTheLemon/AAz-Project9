@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class Notifications {
 	private String id;
 	private String sender_id;
-	private String sender_name;
+	//private String sender_name;
 }
