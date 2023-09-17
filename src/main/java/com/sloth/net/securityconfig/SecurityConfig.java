@@ -67,14 +67,12 @@ public class SecurityConfig {
 		http
 	  .csrf().disable()
       .authorizeHttpRequests()
-      .antMatchers("/auth/**","/v3/api-docs", "/configuration/ui", 
-    		  "/swagger-resources/**", "/configuration/**", "/swagger-ui.html/**", 
-    		  "/webjars/**","/xxx/**","/app/**","/user/**").permitAll()
+      .antMatchers("/auth/**","/","/mvc/**","/xxx/**","/app/**","/user/**").permitAll()
       .anyRequest().authenticated();
-	  http
-	  .formLogin()
-	  .loginPage("/auth/login");
-	  
+//	  http
+//	  .formLogin()
+//	  .loginPage("/auth/login");
+	  ;
 	  
 	  // the exception handling code ensures that the server will return 
 	  //HTTP status 401 (Unauthorized) if any error occurs during authentication process
@@ -87,6 +85,8 @@ public class SecurityConfig {
               );
           }
       );
+        http.logout().deleteCookies("remove").invalidateHttpSession(false)
+		.logoutUrl("/logout").logoutSuccessUrl("/");
       
       // add custom jwt filter to filter chain
 	  http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

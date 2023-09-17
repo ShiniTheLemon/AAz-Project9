@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <!-- Required meta tags -->
-   <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <style>
@@ -105,11 +105,11 @@
   </head>
   <body>
 	<div id="login-form-wrap">
-		<h2>HI THERE HELLO!</h2>
-		<form id="login-form" th:action="@{/mvc/signin}" method="post">
-			<p th:text="${error}" class="error"></p>
+		<h2>SIGN UP</h2>
+		<form id="login-form" th:action="@{/auth/signup}" method="post">
+		
 			<p>
-				<input type="text" id="email" name="email" placeholder="Username" required><i class="validation"><span></span><span></span></i>
+				<input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i>
 			</p>
 			<p>
 				<input type="password" id="password" name="password" placeholder="password" required><i class="validation"><span></span><span></span></i>
@@ -119,7 +119,7 @@
 			</p>
 		</form>
 		<div id="create-account-wrap">
-			<p>Not a member? <a href="#">Create Account</a><p>
+			<p>Already  a member? <a href="#">Login</a><p>
 		</div>
 	</div>
   </body>

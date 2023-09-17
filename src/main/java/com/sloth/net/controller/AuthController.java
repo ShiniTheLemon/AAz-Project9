@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,16 +30,10 @@ public class AuthController {
 	Jwt jwt;
 	@Autowired
 	AuthenticationManager authManager;
-	
-	@RequestMapping(value="/login",method=RequestMethod.GET)
-	public String login() {
-		return "login";
-	}
-	
-	
+
 	//checks if user is authenticated then generates token
-	@PostMapping("/login2")
-	public ResponseEntity<?> login2(@RequestBody AuthRequest req){
+	@PostMapping("/api/signin")
+	public ResponseEntity<?> login2( AuthRequest req){
 		try {
 			Authentication auth=authManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
@@ -57,7 +52,7 @@ public class AuthController {
 		
 	}
 	
-	@RequestMapping(value="/signUp",method=RequestMethod.POST)
+	@RequestMapping(value="/api/signUp",method=RequestMethod.POST)
 	public ResponseEntity<Users> signUp(Users user){
 		return new ResponseEntity<Users>(service.signUp(user),HttpStatus.CREATED);
 	}
