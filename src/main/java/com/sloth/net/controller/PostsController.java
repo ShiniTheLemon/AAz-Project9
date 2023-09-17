@@ -1,6 +1,7 @@
 package com.sloth.net.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sloth.net.entities.Comments;
 import com.sloth.net.entities.Posts;
+import com.sloth.net.entities.User_info;
 import com.sloth.net.service.PostService;
 
 
@@ -43,6 +45,15 @@ public class PostsController {
 	public ResponseEntity<Posts>  dislikePost(int post_id) {
 		return new ResponseEntity<Posts>(posts.dislikePost(post_id),HttpStatus.CREATED);
 	}
+	@PostMapping("/deletePost")
+	public ResponseEntity<?>  deletePost(int post_id) {
+		posts.deletePost(post_id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	
+	
+	
 	
 	@PostMapping("/comment")
 	public ResponseEntity<Comments>  CreateComment(int user_id, String comment,int post_id) {
@@ -60,6 +71,25 @@ public class PostsController {
 	public ResponseEntity<Comments>  dislikeComment(int comment_id) {
 		return new ResponseEntity<Comments>(posts.dislikeComment(comment_id),HttpStatus.CREATED);
 	}
+	@PostMapping("/deleteComment")
+	public ResponseEntity<?>  deleteComment(int comment_id) {
+		posts.deleteComment(comment_id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 	
 	
+	
+	
+	@PostMapping("/addInfo")
+	public ResponseEntity<User_info>AddInfo(User_info info){
+		return new ResponseEntity<User_info>(posts.addUserInfo(info),HttpStatus.CREATED);
+	}
+	@GetMapping("/showAllUsers")
+	public ResponseEntity<List<User_info>>showAllUsers(){
+		return new ResponseEntity<List<User_info>>(posts.getAllUserInfo(),HttpStatus.OK);
+	}
+	@PostMapping("/showUser")
+	public ResponseEntity<Optional<User_info>>showUser(int user_id){
+		return new ResponseEntity<Optional<User_info>>(posts.getUserInfo(user_id),HttpStatus.OK);
+	}
 }

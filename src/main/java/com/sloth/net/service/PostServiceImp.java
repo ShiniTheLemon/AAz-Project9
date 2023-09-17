@@ -2,14 +2,17 @@ package com.sloth.net.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sloth.net.entities.Comments;
 import com.sloth.net.entities.Posts;
+import com.sloth.net.entities.User_info;
 import com.sloth.net.repo.CommentRepository;
 import com.sloth.net.repo.PostRepository;
+import com.sloth.net.repo.UserInfoRepository;
 
 @Service
 public class PostServiceImp implements PostService{
@@ -18,6 +21,10 @@ public class PostServiceImp implements PostService{
 	CommentRepository commentRepo;
 	@Autowired
 	PostRepository postRepo;
+	@Autowired
+	UserInfoRepository userRepo;
+	
+	//create method to prevent user from liking more than once
 	
 	@Override
 	public Posts createPost(int user_id, String post) {
@@ -140,6 +147,41 @@ public class PostServiceImp implements PostService{
 			}
 		}
 		return filteredComments;
+	}
+
+	@Override
+	public void deletePost(int post_id) {
+		// TODO Auto-generated method stub
+		postRepo.deleteById(post_id);
+		postRepo.deleteByPid(post_id);
+		
+	}
+
+	@Override
+	public void deleteComment(int comment_id) {
+		// TODO Auto-generated method stub
+		commentRepo.deleteById(comment_id);
+	}
+
+	@Override
+	public User_info addUserInfo(User_info info) {
+		// TODO Auto-generated method stub
+		User_info data=userRepo.save(info);
+		return data;
+	}
+
+	@Override
+	public List<User_info> getAllUserInfo() {
+		// TODO Auto-generated method stub
+		List<User_info> data=userRepo.findAll();
+		return data;
+	}
+
+	@Override
+	public Optional<User_info> getUserInfo(int user_id) {
+		// TODO Auto-generated method stub
+		Optional<User_info> data=userRepo.findById(user_id);
+		return data;
 	}
 
 }

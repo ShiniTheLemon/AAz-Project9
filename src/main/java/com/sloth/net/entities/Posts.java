@@ -18,4 +18,5 @@ public class Posts {
 	private String post;
 	private int likes;
 	private int dislikes;
+	private String topic;
 }

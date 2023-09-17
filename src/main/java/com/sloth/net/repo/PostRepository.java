@@ -10,4 +10,5 @@ import com.sloth.net.entities.Posts;
 public interface PostRepository extends JpaRepository<Posts, Integer> {
 	Posts findPostsByPid(int id);
 	List<Posts> findPostsByUserid(int user_id);
+	void deleteByPid(int post_id);
 }
