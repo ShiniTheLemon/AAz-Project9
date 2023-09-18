@@ -33,7 +33,8 @@ public class AuthController {
 
 	//checks if user is authenticated then generates token
 	@PostMapping("/api/signin")
-	public ResponseEntity<?> login2( AuthRequest req){
+	public ResponseEntity<?> login2(@RequestBody AuthRequest req){
+		System.out.println("user login info "+ req);
 		try {
 			Authentication auth=authManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
@@ -53,7 +54,8 @@ public class AuthController {
 	}
 	
 	@RequestMapping(value="/api/signUp",method=RequestMethod.POST)
-	public ResponseEntity<Users> signUp(Users user){
+	public ResponseEntity<Users> signUp(@RequestBody Users user){
+		System.out.println("sign up info "+ user);
 		return new ResponseEntity<Users>(service.signUp(user),HttpStatus.CREATED);
 	}
 }
