@@ -10,4 +10,5 @@ import com.sloth.net.entities.Comments;
 public interface CommentRepository extends JpaRepository<Comments, Integer> {
 	Comments findCommentsByCid(int id);
 	List<Comments> findCommentsByPid(int id);
+	void deleteByPid(int post_id);
 }

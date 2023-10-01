@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.sloth.net.entities.Comments;
 import com.sloth.net.entities.Posts;
 import com.sloth.net.entities.User_info;
+import com.sloth.net.entities.Users;
 import com.sloth.net.repo.CommentRepository;
 import com.sloth.net.repo.PostRepository;
 import com.sloth.net.repo.UserInfoRepository;
+import com.sloth.net.repo.UserRepository;
 
 @Service
 public class PostServiceImp implements PostService{
@@ -22,20 +26,32 @@ public class PostServiceImp implements PostService{
 	@Autowired
 	PostRepository postRepo;
 	@Autowired
-	UserInfoRepository userRepo;
+	UserInfoRepository userInfoRepo;
+	@Autowired
+	UserRepository userRepo;
 	
 	//create method to prevent user from liking more than once
 	
 	@Override
-	public Posts createPost(int user_id, String post) {
+	public Posts createPost(int user_id, String post,String topic) {
 		// TODO Auto-generated method stub
 		
 		Posts postsObj=new Posts();
 		postsObj.setUserid(user_id);
 		postsObj.setPost(post);
+		postsObj.setTopic(topic);
 		
 		return postRepo.save(postsObj);
 		
+	}
+	
+	@Override
+	public Posts editPost( int post_id, String post) {
+		// TODO Auto-generated method stub
+		Posts postsObj=postRepo.findPostsByPid(post_id);
+		postsObj.setPost(post);
+
+		return postRepo.save(postsObj);
 	}
 
 	@Override
@@ -81,14 +97,15 @@ public class PostServiceImp implements PostService{
 	}
 
 	@Override
-	public Comments comment(int user_id, int post_id, String comment) {
+	public List<Comments> comment(int user_id, int post_id, String comment) {
 		// TODO Auto-generated method stub
 		Comments commentObj=new Comments();
 		commentObj.setUserid(user_id);
 		commentObj.setPid(post_id);
 		commentObj.setComment(comment);
 		
-		return commentRepo.save(commentObj);
+		 commentRepo.save(commentObj);
+		 return filterComments(commentRepo.findCommentsByPid(post_id));
 	}
 
 	@Override
@@ -153,7 +170,7 @@ public class PostServiceImp implements PostService{
 	public void deletePost(int post_id) {
 		// TODO Auto-generated method stub
 		postRepo.deleteById(post_id);
-		postRepo.deleteByPid(post_id);
+		commentRepo.deleteByPid(post_id);
 		
 	}
 
@@ -166,22 +183,33 @@ public class PostServiceImp implements PostService{
 	@Override
 	public User_info addUserInfo(User_info info) {
 		// TODO Auto-generated method stub
-		User_info data=userRepo.save(info);
+		User_info data=userInfoRepo.save(info);
 		return data;
 	}
 
 	@Override
 	public List<User_info> getAllUserInfo() {
 		// TODO Auto-generated method stub
-		List<User_info> data=userRepo.findAll();
+		List<User_info> data=userInfoRepo.findAll();
 		return data;
 	}
 
 	@Override
 	public Optional<User_info> getUserInfo(int user_id) {
 		// TODO Auto-generated method stub
-		Optional<User_info> data=userRepo.findById(user_id);
+		Optional<User_info> data=userInfoRepo.findByUserid(user_id);
+		
 		return data;
 	}
+
+	@Override
+	public Posts showSinglePost(int post_id) {
+		// TODO Auto-generated method stub
+		return postRepo.findPostsByPid(post_id);
+	}
+
+
+
+
 
 }

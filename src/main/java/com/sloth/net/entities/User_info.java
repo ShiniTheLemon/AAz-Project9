@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User_info {
 	@Id
-	private int info_id;
-	private int user_id;
+	private int infoid;
+	private int userid;
 	private String user_name;
 	private String email;
 	private String sex;

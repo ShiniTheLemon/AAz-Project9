@@ -128,7 +128,7 @@
 	            <a href="#"><i class="zmdi zmdi-notifications text-danger"></i>
 	            </a>
 	          </li>
-	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li>
+<!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
 	        </ul>
 	      </div>
 	    </nav>
@@ -137,9 +137,23 @@
 	      <p>
 	        Make sure to keep all page content within the 
 	        	<p th:text="${token}" ></p>
-	        	<p th:text="${user}" ></p>
-	        <code>#content</code>.
-	      </p>
+<!-- 	        	<p th:text="${userData}" ></p> -->
+	 
+	      
+	        
+					<ul th:each="data : ${userData}">
+						<li th:text="${data.infoid}"></li>
+						<li th:text="${data.userid}"></li>
+					    <li th:text="${data.user_name}"></li>
+					    <li th:text="${data.email}"></li>
+					    <li th:text="${data.sex}"></li>
+					    <li th:text="${data.interests}"></li>
+					    <li th:text="${data.about}"></li>
+					    <li th:text="${data.movies}"></li>
+					    <li th:text="${data.music}"></li>
+					</ul>
+		
+	     
 	    </div>
 	  </div>
 	</div>

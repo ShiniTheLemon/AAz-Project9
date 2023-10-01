@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.sloth.net.entities.Comments;
 import com.sloth.net.entities.Posts;
 import com.sloth.net.entities.User_info;
 import com.sloth.net.entities.Users;
@@ -42,6 +45,9 @@ import com.sloth.net.pojo.UsersJwt;
 public class ClientController {
 	@Autowired AuthController auth;
 	private static final String url="http://localhost:3000/";
+	private static final String authUrl=url+"auth/api/";
+	private static final String apiUrl=url+"api/posts/";
+	private  RestTemplate temp=new RestTemplate();
 
 	@GetMapping("/")
 	public String signInPage(){
@@ -51,46 +57,58 @@ public class ClientController {
 	public String signUpPage() {
 		return "SignUp";
 	}
+	
+	@PostMapping("/mvc/signUp")
+	public String signUp(Users user) {
+		Users res = temp.postForObject(authUrl+"signUp", user,Users.class);
+		return "Login";
+	}
 	@PostMapping("/mvc/signin")
 	public String signIn( AuthRequest req,ModelMap modelMap,HttpSession session) throws URISyntaxException {
-		RestTemplate temp= new RestTemplate();
-		HttpHeaders headers=new HttpHeaders();
-		headers.set("Accept", "application/json");
+
+		System.out.println("client method is running ");
 	
 		try {
 			//call login API
 			 RequestEntity<?> request = RequestEntity
-				     .post(new URI(url+"auth/api/signin"))
+				     .post(new URI(authUrl+"signin"))
 				     .accept(MediaType.APPLICATION_JSON)
 				     .body(req);
+			 System.out.println("first client api has been called  request value"+request);
+			 
 				 ResponseEntity<AuthResponse> res = temp.exchange(request, AuthResponse.class);
 				 
-				 	//get token and create session 
-					AuthResponse token =  (AuthResponse) res.getBody();
-					String accesstoken =token.getAccessAToken();
-					session.setAttribute("token", accesstoken);
+				 System.out.println("first client api has been called  "+res);
 
 					if(res.getStatusCodeValue()==200) {
-					Users user = new Users();
-				
+						 System.out.println("first condition is true "+res.getStatusCodeValue());	
+			
+					 //get web token and create session 
+					AuthResponse token =  (AuthResponse) res.getBody();
+					String accesstoken =token.getAccessAToken();
+					session.setAttribute("webtoken", accesstoken);
+					
 					
 					//get logged in user
-					Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-					String currentPrincipalName = authentication.getName();
+					ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
+					 
+					System.out.println("logged in user info  "+singleUserData.getBody());	
 					
-					user.setEmail(currentPrincipalName);
-					
+					UsersJwt loggedInUser = (UsersJwt) singleUserData.getBody() ;
 					
 					//set bearer authorization to header
+					//access show all users API
+					HttpHeaders headers=new HttpHeaders();
+					headers.set("Accept", "application/json");
 					headers.setBearerAuth(accesstoken);
 					HttpEntity<String> httpEntity = new HttpEntity<>("some body", headers);
-					ResponseEntity<List> data=temp.exchange(url+"/api/posts/showAllUsers", HttpMethod.GET, httpEntity, List.class);
+					ResponseEntity<List> allUsersdata=temp.exchange(apiUrl+"showAllUsers", HttpMethod.GET, httpEntity, List.class);
 			
-					List<User_info>userInfo=(List<User_info>) data.getBody();
+					List<User_info>userInfo=(List<User_info>) allUsersdata.getBody();
 					System.out.println("user info "+userInfo);
 					
 					modelMap.addAttribute("userInfo", userInfo);
-					modelMap.addAttribute("user", user);
+					modelMap.addAttribute("user", loggedInUser.getEmail());
 					modelMap.addAttribute("token", accesstoken);
 					return "Index";
 				}else {
@@ -98,42 +116,271 @@ public class ClientController {
 					return "Login";
 				}
 		}catch(HttpClientErrorException e) {
+			modelMap.addAttribute("error", "Invalid credentials authentication failure");
+			System.out.println("none of the conditions are  true ");	
 			e.printStackTrace();
+		
 			return "Login";
 		}
 
 
 		
 	}
+	
+	////POSTS
+	
 	@GetMapping("/mvc/global/profiles")
-	public String globalProfiles(int user_id) {
-		return null;
+	public String globalProfiles(int user_id,HttpSession session,ModelMap modelMap) {
+		//int user_id=12505;
+		
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<User_info> res= temp.exchange(apiUrl+"showUser/"+user_id, HttpMethod.GET, httpEntity, User_info.class);
+		
+		User_info userData=res.getBody();
+		
+		modelMap.addAttribute("userData", userData);
+		System.out.println("user profile data "+ userData);
+		
+		return "Profiles";
 	}
 	@GetMapping("/mvc/global/topics")
-	public String globalTopics() {
-		return null;
+	public String globalTopics(HttpSession session,ModelMap modelMap) {
+		
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<List> res= temp.exchange(apiUrl+"allPosts", HttpMethod.GET, httpEntity, List.class);
+		List<Posts>topics=res.getBody();
+		
+		modelMap.addAttribute("topics", topics);
+		
+		
+		return "Topics";
 	}
-	@GetMapping("/mvc/specific/topic")
-	public String specificTopic(int user_id) {
-		return null;
+	@GetMapping("/mvc/specific/topics")
+	public String specificTopic(int user_id,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<List> res= temp.exchange(apiUrl+"userPosts/"+user_id, HttpMethod.GET, httpEntity, List.class);
+		List<Posts>topics=res.getBody();
+		
+		modelMap.addAttribute("topics", topics);
+		
+		
+		return "Topics";
 	}
 	@GetMapping("/mvc/single/topic")
-	public String SingleTopic(int post_id) {
-		return null;
+	public String SingleTopic(int post_id,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"singlePosts/"+post_id, HttpMethod.GET, httpEntity, Posts.class);
+		Posts topics=res.getBody();
+		
+		modelMap.addAttribute("topics", topics);
+		
+		
+		return "Topics";
+	}
+	
+	//needs  work
+	//like seriously this is going to brake
+	@PostMapping("/mvc/create/topic")
+	public String createPost(HttpSession session, ModelMap modelMap,String topic,String post) throws URISyntaxException {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
+		int user_id=singleUserData.getBody().getUser_id();
+		
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		
+		
+		 	
+		ResponseEntity<Posts> res =temp.exchange(apiUrl+"createPost/"+user_id+"/"+topic+"/"+post, HttpMethod.GET, httpEntity, Posts.class);
+		Posts topics = res.getBody();
+		modelMap.addAttribute("topics", topics);
+		
+		return "Topics";
+	}
+	@PostMapping("/mvc/delete/topic")
+	public String deleteTopic(int post_id,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"deletePost/"+post_id, HttpMethod.POST, httpEntity, Posts.class);
+		Posts topics=res.getBody();
+		
+		
+		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
+		int user_id=singleUserData.getBody().getUser_id();
+			
+		return specificTopic( user_id, session, modelMap);
+	}
+	@PostMapping("/mvc/edit/topic")
+	public String editTopic(int post_id,String post,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"editPost/"+post_id+"/"+post, HttpMethod.POST, httpEntity, Posts.class);
+		Posts topics=res.getBody();
+		
+
+		modelMap.addAttribute("topics", topics);
+		return "Topics";
 	}
 	
 	
-	@PostMapping("/mvc/likedislike/{choice}")
-	public String likeDislike(@PathVariable int choice){
-		return null;
+	@PostMapping("/mvc/likedislike/{choice}/{id}")
+	public String likeDislike(@PathVariable int choice,@PathVariable int id,HttpSession session,ModelMap modelMap){
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<?>res = null;
+		int commentOrPost=0;
+		switch (choice){
+		 case 0:
+			res= temp.exchange(apiUrl+"likePost/"+id, HttpMethod.POST, httpEntity, Posts.class);
+			commentOrPost=1;
+			break;
+		 case 1:
+			 res= temp.exchange(apiUrl+"dislikePost/"+id, HttpMethod.POST, httpEntity, Posts.class);
+			 commentOrPost=1;
+			 break;
+		 case 2:
+			 res= temp.exchange(apiUrl+"likeComment/"+id, HttpMethod.POST, httpEntity, Comments.class);
+			 commentOrPost=2;
+			 break;
+		 case 3:
+			 res= temp.exchange(apiUrl+"dislikeComment/"+id, HttpMethod.POST, httpEntity, Comments.class);
+			 commentOrPost=2;
+			 break; 
+		}
+		
+		if(commentOrPost==1) {
+			Posts topics=(Posts) res.getBody();
+			modelMap.addAttribute("topics", topics);
+			return "Topics";
+		}else {
+			Comments innit=(Comments) res.getBody();
+			int post_id=innit.getPid();
+			ResponseEntity<Posts> res2= temp.exchange(apiUrl+"singlePosts/"+post_id, HttpMethod.GET, httpEntity, Posts.class);
+			Posts topics=res2.getBody();
+			
+			modelMap.addAttribute("topics", topics);	
+			return "Topics";
+			
+		}
+
 	}
+	
+	//COMMENTS
+	
+	@GetMapping("/mvc/all/comments")
+	public String allComments(int post_id,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"singlePosts/"+post_id, HttpMethod.GET, httpEntity, Posts.class);
+		ResponseEntity<List>res2=temp.exchange(apiUrl+"allComments/"+post_id, HttpMethod.GET, httpEntity, List.class);
+		Posts topics=res.getBody();
+		List <Comments>commentList=res2.getBody();
+		
+		modelMap.addAttribute("topics", topics);
+		modelMap.addAttribute("comments", commentList);
+		
+		
+		return "Comments";
+	}
+	@GetMapping("/mvc/comments")
+	public String Comments(int post_id,String body, HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		
+		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
+		int user_id=singleUserData.getBody().getUser_id();
+		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+	
+		ResponseEntity<List>res2=temp.exchange(apiUrl+"allComments/"+user_id+"/"+body+"/"+post_id, HttpMethod.POST, httpEntity, List.class);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"singlePosts/"+post_id, HttpMethod.GET, httpEntity, Posts.class);
+		Posts topics=res.getBody();
+		List <Comments>commentList=res2.getBody();
+		
+		modelMap.addAttribute("topics", topics);
+		modelMap.addAttribute("comments", commentList);
+		
+		
+		return "Comments";
+	}
+	
 	
 	@PostMapping("/mvc/update/info")
-	public String updateInfo(User_info info) {
-		return null;
+	public String updateInfo(User_info info,HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity <User_info>httpEntity=new HttpEntity<>(info,headers);
+		
+		ResponseEntity<User_info>res=temp.exchange(apiUrl+"addInfo", HttpMethod.POST, httpEntity, User_info.class);
+		
+		User_info userData=res.getBody();
+		modelMap.addAttribute("userData", userData);
+		System.out.println("user profile data "+ userData);
+		
+		return "Profiles";
+	}
+	
+	@PostMapping("/mvc/all/profiles")
+	public String allProfiles(HttpSession session,ModelMap modelMap) {
+		String accesstoken=(String)session.getAttribute("webtoken");
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity <String>httpEntity=new HttpEntity<>("",headers);
+		
+		ResponseEntity<List> res=temp.exchange(apiUrl+"showAllUsers", HttpMethod.GET, httpEntity, List.class);
+		List<User_info>userData=res.getBody();
+		modelMap.addAttribute("userData", userData);
+		
+		return "Profiles";
 	}
 	@PostMapping("/mvc/chat")
 	public String chat() {
-		return null;
+		return "NotYet";
 	}
 }
