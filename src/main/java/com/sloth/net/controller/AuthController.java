@@ -35,7 +35,17 @@ public class AuthController {
 	Jwt jwt;
 	@Autowired
 	AuthenticationManager authManager;
+<<<<<<< Updated upstream
 
+=======
+	
+	@RequestMapping(value="/login",method=RequestMethod.GET)
+	public String login() {
+		return "Index";
+	}
+	
+	
+>>>>>>> Stashed changes
 	//checks if user is authenticated then generates token
 	@PostMapping("/api/signin")
 	public ResponseEntity<?> login2(@RequestBody AuthRequest req){
