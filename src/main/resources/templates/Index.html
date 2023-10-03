@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+
 <style>
 	  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 		
@@ -98,23 +100,23 @@
 	    </header>
 	    <ul class="nav">
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/all/profiles}">
 	          <i class="zmdi zmdi-view-dashboard"></i>Home
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/my/topic}">
 	          <i class="zmdi zmdi-account-box"></i>My Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/global/topics}">
 	          <i class="zmdi zmdi-globe-alt"></i>Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
-	          <i class="zmdi zmdi-comments"></i> Chat
+	        <a th:href="@{/mvc/vl}" style="color: red; ">
+	          <i class="zmdi zmdi-comments"></i> VannillaLemonaide
 	        </a>
 	      </li>
 	    </ul>
@@ -128,18 +130,36 @@
 	            <a href="#"><i class="zmdi zmdi-notifications text-danger"></i>
 	            </a>
 	          </li>
-	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li>
+	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
 	        </ul>
 	      </div>
 	    </nav>
 	    <div class="container-fluid">
-	      <h1>Simple Sidebar</h1>
-	      <p>
-	        Make sure to keep all page content within the 
-	        	<p th:text="${token}" ></p>
-	        	<p th:text="${user}" ></p>
-	        <code>#content</code>.
-	      </p>
+
+			<div class="card" th:each="info: ${userInfo}">
+				  <div class="card-header">
+				    <h3 th:text="${info.user_name}" class="text-white bg-dark"></h3>
+				  </div>
+				  <div class="card-body">
+					    <h5 class="card-title"><span class="text-warning">Bio</span></h5>
+					    <p class="card-text" th:text="${info.about}"></p>
+					    <h5 class="card-title"><span class="text-warning">Interests</span></h5>
+					    <p class="card-text" th:text="${info.interests}"></p>
+						<h5 class="card-title"><span class="text-warning">Favorite Night Time Activity</span></h5>
+					    <p class="card-text" th:text="${info.night_activity}"></p>
+
+					  
+						<div class="card" style="width: 18rem;">
+							  <ul class="list-group list-group-flush">
+								 <li class="list-group-item" th:text="${info.email}"> Email</li>
+								  <li class="list-group-item" th:text="${info.sex}">Sex</li>
+								  <li class="list-group-item" th:text="${info.birthday}">Birthday</li>
+							  </ul>
+						</div>
+					 <a th:href="@{/mvc/specific/topics(user_id=${info.userid})}" class="btn btn-primary">View User's Topics</a>
+				  </div>
+			</div>
+
 	    </div>
 	  </div>
 	</div>

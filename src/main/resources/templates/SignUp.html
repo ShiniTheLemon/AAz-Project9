@@ -101,25 +101,25 @@
 		  border-radius: 0 0 4px 4px;
 		}
     </style>
-    <title>Login</title>
+    <title>SIGN UP</title>
   </head>
   <body>
 	<div id="login-form-wrap">
-		<h2>SIGN UP</h2>
-		<form id="login-form" th:action="@{/auth/signup}" method="post">
-		
+		<h2 th:text="${error}" class="form-control"></h2>
+		<form id="login-form" th:action="@{/mvc/signUp}" method="post">
+			
 			<p>
-				<input type="text" id="username" name="username" placeholder="Username" required><i class="validation"><span></span><span></span></i>
+				<input type="text" id="username" th:name="email" placeholder="Username" required><i class="validation"><span></span><span></span></i>
 			</p>
 			<p>
-				<input type="password" id="password" name="password" placeholder="password" required><i class="validation"><span></span><span></span></i>
+				<input type="password" id="password" th:name="password" placeholder="password" required><i class="validation"><span></span><span></span></i>
 			</p>
 			<p>
-				<input type="submit" id="login" value="Login">
+				<input type="submit" id="login" value="SignUp">
 			</p>
 		</form>
 		<div id="create-account-wrap">
-			<p>Already  a member? <a href="#">Login</a><p>
+			<p>Already  a member? <a th:href="@{/}">Login</a><p>
 		</div>
 	</div>
   </body>

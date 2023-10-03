@@ -23,10 +23,6 @@ public class User_info {
 	private Date birthday;
 	private String about;
 	private String interests;
-	private String music;
-	private String movies;
-	private String books;
-	private String morning_activity;
 	private String night_activity;
-	private String superpower;
+
 }
