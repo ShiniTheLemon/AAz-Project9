@@ -26,8 +26,8 @@ public interface PostService {
 	
 	//comments
 	public List<Comments> comment(int user_id,int post_id,String comment);
-	public Comments likeComment(int comment_id);
-	public Comments dislikeComment(int comment_id);
+	public List<Comments> likeComment(int comment_id);
+	public List<Comments> dislikeComment(int comment_id);
 	public List<Comments> ShowAllComments(int post_id);
 	public void deleteComment(int comment_id);
 	

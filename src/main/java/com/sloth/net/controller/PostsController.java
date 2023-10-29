@@ -27,9 +27,9 @@ public class PostsController {
 	@Autowired
 	private PostService posts;
 	
-	@PostMapping("/createPost/{user_id}/{topic}/{post}")
-	public ResponseEntity<Posts>  CreatePost(@PathVariable int user_id,@PathVariable String topic,@PathVariable  String post) {
-		return new ResponseEntity<Posts>(posts.createPost(user_id, post,topic),HttpStatus.CREATED);
+	@PostMapping("/createPost")
+	public ResponseEntity<Posts>  CreatePost(@RequestBody Posts post) {
+		return new ResponseEntity<Posts>(posts.createPost(post.getUserid(), post.getPost(),post.getTopic()),HttpStatus.CREATED);
 	}
 	@GetMapping("/userPosts/{user_id}")
 	public ResponseEntity<List<Posts>> showUserPosts(@PathVariable int user_id){
@@ -57,16 +57,16 @@ public class PostsController {
 		posts.deletePost(post_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	@PostMapping("/editPost/{post_id}/{post}")
-	public ResponseEntity<?>  editPost(@PathVariable int post_id,String post) {
-		return new ResponseEntity<>(posts.editPost(post_id,post),HttpStatus.OK);
+	@PostMapping("/editPost")
+	public ResponseEntity<?>  editPost(@RequestBody Posts post) {
+		return new ResponseEntity<>(posts.editPost(post.getPid(),post.getPost()),HttpStatus.OK);
 	}
 	
 	
 	
 	
 	@PostMapping("/comment/{user_id}/{comment}/{post_id}")
-	public ResponseEntity<List<Comments>>  CreateComment(@PathVariable int user_id, String comment,int post_id) {
+	public ResponseEntity<List<Comments>>  CreateComment(@PathVariable int user_id,@PathVariable String comment,@PathVariable int post_id) {
 		return new ResponseEntity<List<Comments>>(posts.comment(user_id, post_id, comment),HttpStatus.CREATED);
 	}
 	@GetMapping("/allComments/{post_id}")
@@ -74,12 +74,12 @@ public class PostsController {
 		return new ResponseEntity<List<Comments>>(posts.ShowAllComments(post_id),HttpStatus.OK);
 	}
 	@PostMapping("/likeComment/{comment_id}")
-	public ResponseEntity<Comments>  likeComment(@PathVariable int comment_id) {
-		return new ResponseEntity<Comments>(posts.likeComment(comment_id),HttpStatus.CREATED);
+	public ResponseEntity<List<Comments>>  likeComment(@PathVariable int comment_id) {
+		return new ResponseEntity<List<Comments>>(posts.likeComment(comment_id),HttpStatus.CREATED);
 	}
-	@PostMapping("/dislikeComment{comment_id}")
-	public ResponseEntity<Comments>  dislikeComment(@PathVariable int comment_id) {
-		return new ResponseEntity<Comments>(posts.dislikeComment(comment_id),HttpStatus.CREATED);
+	@PostMapping("/dislikeComment/{comment_id}")
+	public ResponseEntity<List<Comments>>  dislikeComment(@PathVariable int comment_id) {
+		return new ResponseEntity<List<Comments>>(posts.dislikeComment(comment_id),HttpStatus.CREATED);
 	}
 	@PostMapping("/deleteComment")
 	public ResponseEntity<?>  deleteComment(int comment_id) {

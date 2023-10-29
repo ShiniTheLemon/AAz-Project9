@@ -3,10 +3,12 @@
 
 <head>
   <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Profiles</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+
 <style>
 	  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 		
@@ -98,23 +100,23 @@
 	    </header>
 	    <ul class="nav">
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/all/profiles}">
 	          <i class="zmdi zmdi-view-dashboard"></i>Home
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/my/topic}">
 	          <i class="zmdi zmdi-account-box"></i>My Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/global/topics}">
 	          <i class="zmdi zmdi-globe-alt"></i>Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
-	          <i class="zmdi zmdi-comments"></i> Chat
+	        <a th:href="@{/mvc/vl}" style="color: red; ">
+	          <i class="zmdi zmdi-comments"></i> VannillaLemonaide
 	        </a>
 	      </li>
 	    </ul>
@@ -128,33 +130,46 @@
 	            <a href="#"><i class="zmdi zmdi-notifications text-danger"></i>
 	            </a>
 	          </li>
-<!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
+	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
+	          <li><a th:href="@{/logout}">LogOut</a></li>
 	        </ul>
 	      </div>
 	    </nav>
-	    <div class="container-fluid">
-	      <h1>Simple Sidebar</h1>
-	      <p>
-	        Make sure to keep all page content within the 
-	        	<p th:text="${token}" ></p>
-<!-- 	        	<p th:text="${userData}" ></p> -->
-	 
-	      
-	        
-					<ul th:each="data : ${userData}">
-						<li th:text="${data.infoid}"></li>
-						<li th:text="${data.userid}"></li>
-					    <li th:text="${data.user_name}"></li>
-					    <li th:text="${data.email}"></li>
-					    <li th:text="${data.sex}"></li>
-					    <li th:text="${data.interests}"></li>
-					    <li th:text="${data.about}"></li>
-					    <li th:text="${data.movies}"></li>
-					    <li th:text="${data.music}"></li>
-					</ul>
+	    
+	    <form th:action="@{/mvc/update/info}"  method="post">
+	    		    <div class="container-fluid">
+
+						<div class="card" th:each="info: ${userData}">
+							  <div class="card-header">
+							    <input type="text" th:name="user_name" th:value="${info.user_name}"  class="form-control">
+							  </div>
+							  <div class="card-body">
+								    <h5 class="card-title"><span class="text-warning">Bio</span></h5>  
+								    <textarea th:value="${info.about}"  class="form-control" th:name="about" rows="3" cols="5"  th:text="${info.about}"></textarea>
+								    <h5 class="card-title"><span class="text-warning">Interests</span></h5>
+								    <textarea th:value="${info.interests}"  class="form-control" th:name="interests" rows="3" cols="5" th:text="${info.interests}"></textarea>
+									<h5 class="card-title"><span class="text-warning">Favorite Night Time Activity</span></h5>
+								    <textarea th:value="${info.night_activity}"  class="form-control" th:name="night_activity"  rows="3" cols="5"  th:text="${info.night_activity}"></textarea>
+								    
 		
-	     
-	    </div>
+			
+								  
+									<div class="card" style="width: 18rem;">
+										  <ul class="list-group list-group-flush">
+											  <li class="list-group-item" ><input class="form-control" th:text="Email" th:name="email" type="text"  th:value="${info.email}"></li>
+											 <li class="list-group-item" ><input class="form-control" th:text="Sex"   th:name="sex" type="text"  th:value="${info.sex}"></li>
+											  <li class="list-group-item" ><input class="form-control" th:text="Birthday"  th:name="birthday" type="date"   th:value="${info.birthday}"></li>
+										  </ul>
+									</div>
+							  </div>
+							  <input type="hidden" th:value="${info.userid}" th:name="userid"  >
+							  <input type="hidden" th:value="${info.infoid}" th:name="infoid"  >
+						</div>
+
+						<input type="submit" value="Save" /> 
+				    </div>
+	    </form>
+
 	  </div>
 	</div>
 </body>

@@ -3,10 +3,11 @@
 
 <head>
   <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Global Topics</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
 <style>
 	  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 		
@@ -98,23 +99,23 @@
 	    </header>
 	    <ul class="nav">
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/all/profiles}">
 	          <i class="zmdi zmdi-view-dashboard"></i>Home
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/my/topic}">
 	          <i class="zmdi zmdi-account-box"></i>My Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
+	        <a th:href="@{/mvc/global/topics}">
 	          <i class="zmdi zmdi-globe-alt"></i>Topics
 	        </a>
 	      </li>
 	      <li>
-	        <a href="#">
-	          <i class="zmdi zmdi-comments"></i> Chat
+	        <a th:href="@{/mvc/vl}" style="color: red; ">
+	          <i class="zmdi zmdi-comments"></i> VannillaLemonaide
 	        </a>
 	      </li>
 	    </ul>
@@ -125,35 +126,27 @@
 	      <div class="container-fluid">
 	        <ul class="nav navbar-nav navbar-right">
 	          <li>
-	            <a href="#"><i class="zmdi zmdi-notifications text-danger"></i>
-	            </a>
-	          </li>
+	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
+	          <li><a th:href="@{/logout}">LogOut</a></li>
+	        
 <!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
 	        </ul>
 	      </div>
 	    </nav>
-	    <div class="container-fluid">
-	      <h1>Simple Sidebar</h1>
-	      <p>
-	        Make sure to keep all page content within the 
-	        	<p th:text="${token}" ></p>
-<!-- 	        	<p th:text="${userData}" ></p> -->
-	 
-	      
-	        
-					<ul th:each="data : ${userData}">
-						<li th:text="${data.infoid}"></li>
-						<li th:text="${data.userid}"></li>
-					    <li th:text="${data.user_name}"></li>
-					    <li th:text="${data.email}"></li>
-					    <li th:text="${data.sex}"></li>
-					    <li th:text="${data.interests}"></li>
-					    <li th:text="${data.about}"></li>
-					    <li th:text="${data.movies}"></li>
-					    <li th:text="${data.music}"></li>
-					</ul>
+	    <div class="container-fluid" th:each="info: ${topics}">
+	
+	      			<div class="card" >
+						  <div class="card-header">
+						    <h3 th:text="${info.topic}" class="text-warning"></h3>
+						    <p th:text=${info.post}></p>
+						  </div>
+					</div>  
+				<table>
+					<tr><a th:href="@{/mvc/likedislike(choice=0,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-up" th:text="${info.likes}"></a></tr>
+					<tr><a th:href="@{/mvc/likedislike(choice=1,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-down" th:text="${info.dislikes}"></a></tr>
+					<tr><a th:href="@{/mvc/all/comments(post_id=${info.pid})}" class="glyphicon glyphicon-comment"></a></tr>
+				</table>
 		
-	     
 	    </div>
 	  </div>
 	</div>
