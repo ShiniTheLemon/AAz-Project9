@@ -27,9 +27,9 @@ public class PostsController {
 	@Autowired
 	private PostService posts;
 	
-	@PostMapping("/createPost/{user_id}/{topic}/{post}")
-	public ResponseEntity<Posts>  CreatePost(@PathVariable int user_id,@PathVariable String topic,@PathVariable  String post) {
-		return new ResponseEntity<Posts>(posts.createPost(user_id, post,topic),HttpStatus.CREATED);
+	@PostMapping("/createPost")
+	public ResponseEntity<Posts>  CreatePost(@RequestBody Posts post) {
+		return new ResponseEntity<Posts>(posts.createPost(post.getUserid(), post.getPost(),post.getTopic()),HttpStatus.CREATED);
 	}
 	@GetMapping("/userPosts/{user_id}")
 	public ResponseEntity<List<Posts>> showUserPosts(@PathVariable int user_id){
@@ -57,9 +57,9 @@ public class PostsController {
 		posts.deletePost(post_id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
-	@PostMapping("/editPost/{post_id}/{post}")
-	public ResponseEntity<?>  editPost(@PathVariable int post_id,String post) {
-		return new ResponseEntity<>(posts.editPost(post_id,post),HttpStatus.OK);
+	@PostMapping("/editPost")
+	public ResponseEntity<?>  editPost(@RequestBody Posts post) {
+		return new ResponseEntity<>(posts.editPost(post.getPid(),post.getPost()),HttpStatus.OK);
 	}
 	
 	

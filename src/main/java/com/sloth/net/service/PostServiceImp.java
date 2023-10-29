@@ -176,7 +176,10 @@ public class PostServiceImp implements PostService{
 	public void deletePost(int post_id) {
 		// TODO Auto-generated method stub
 		postRepo.deleteById(post_id);
+		
+		//postRepo.deleteByPid(post_id);
 		commentRepo.deleteByPid(post_id);
+	
 		
 	}
 

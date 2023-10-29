@@ -36,6 +36,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.sloth.net.entities.Comments;
+import com.sloth.net.entities.Playlist;
 import com.sloth.net.entities.Posts;
 import com.sloth.net.entities.User_info;
 import com.sloth.net.entities.Users;
@@ -206,35 +207,53 @@ public class ClientController {
 		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
 		int user_id=singleUserData.getBody().getUser_id();
 		
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		ResponseEntity<List> res= temp.exchange(apiUrl+"userPosts/"+user_id, HttpMethod.GET, httpEntity, List.class);
+		List<Posts>topics=res.getBody();
 		
-		return specificTopic(user_id,session,modelMap);
+		
+		System.out.println(" SPECIFIC TOPIC DATA "+topics);
+		modelMap.addAttribute("topics", topics);
+		
+		return "MyTopics";
 	}
 	
 	//needs  work
 	//like seriously this is going to brake
 	@PostMapping("/mvc/create/topic")
-	public String createPost(HttpSession session, ModelMap modelMap,String topic,String post) throws URISyntaxException {
+	public String createPost(Posts post,HttpSession session, ModelMap modelMap) throws URISyntaxException {
 		String accesstoken=(String)session.getAttribute("webtoken");
+		
 		
 		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
 		int user_id=singleUserData.getBody().getUser_id();
+		post.setUserid(user_id);
 		
+		System.out.println("THE PARAMETERS RECIEVED FROM VIEW" +" "+post);
 		
 		HttpHeaders headers=new HttpHeaders();
 		headers.set("Accept", "application/json");
 		headers.setBearerAuth(accesstoken);
-		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
+		HttpEntity<Posts> httpEntity = new HttpEntity<>(post, headers);
 		
 		
 		 	
-		ResponseEntity<Posts> res =temp.exchange(apiUrl+"createPost/"+user_id+"/"+topic+"/"+post, HttpMethod.GET, httpEntity, Posts.class);
+		ResponseEntity<Posts> res =temp.exchange(apiUrl+"createPost", HttpMethod.POST, httpEntity, Posts.class);
 		Posts topics = res.getBody();
 		modelMap.addAttribute("topics", topics);
 		
-		return "Topics";
+		return "MyTopics";
 	}
-	@PostMapping("/mvc/delete/topic")
-	public String deleteTopic(int post_id,HttpSession session,ModelMap modelMap) {
+	@GetMapping("/mvc/get/topic")
+	public String createTopicPage() {
+		return "CreateTopic";
+	}
+	
+	@GetMapping("/mvc/delete/topic")
+	public String deleteTopic(@RequestParam int post_id,HttpSession session,ModelMap modelMap) {
 		String accesstoken=(String)session.getAttribute("webtoken");
 		
 		HttpHeaders headers=new HttpHeaders();
@@ -242,28 +261,26 @@ public class ClientController {
 		headers.setBearerAuth(accesstoken);
 		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
 		ResponseEntity<Posts> res= temp.exchange(apiUrl+"deletePost/"+post_id, HttpMethod.POST, httpEntity, Posts.class);
-		Posts topics=res.getBody();
 		
+		System.out.println("RESPONSE FROM DELETE API "+res.getBody()+"  "+res.getStatusCode());
 		
-		ResponseEntity<UsersJwt>singleUserData=temp.getForEntity(authUrl+"loggedInUser/"+accesstoken, UsersJwt.class);
-		int user_id=singleUserData.getBody().getUser_id();
 			
-		return specificTopic( user_id, session, modelMap);
+		return MyTopic( session, modelMap);
 	}
 	@PostMapping("/mvc/edit/topic")
-	public String editTopic(int post_id,String post,HttpSession session,ModelMap modelMap) {
+	public String editTopic(Posts post,HttpSession session,ModelMap modelMap) {
 		String accesstoken=(String)session.getAttribute("webtoken");
 		
 		HttpHeaders headers=new HttpHeaders();
 		headers.set("Accept", "application/json");
 		headers.setBearerAuth(accesstoken);
-		HttpEntity<String> httpEntity = new HttpEntity<>("", headers);
-		ResponseEntity<Posts> res= temp.exchange(apiUrl+"editPost/"+post_id+"/"+post, HttpMethod.POST, httpEntity, Posts.class);
+		HttpEntity<Posts> httpEntity = new HttpEntity<>( post, headers);
+		ResponseEntity<Posts> res= temp.exchange(apiUrl+"editPost", HttpMethod.POST, httpEntity, Posts.class);
 		Posts topics=res.getBody();
 		
 
 		modelMap.addAttribute("topics", topics);
-		return "Topics";
+		return "MyTopics";
 	}
 	
 	
@@ -297,9 +314,8 @@ public class ClientController {
 		}
 		
 		if(commentOrPost==1) {
-			Posts topics=(Posts) res.getBody();
-			modelMap.addAttribute("topics", topics);
-			return "Topics";
+
+			return globalTopics(session,modelMap);
 		}else {
 			List<Comments> innit=(List) res.getBody();
 			ResponseEntity<Posts> res2= temp.exchange(apiUrl+"singlePosts/"+x, HttpMethod.GET, httpEntity, Posts.class);
@@ -389,8 +405,26 @@ public class ClientController {
 		
 		return "Index";
 	}
-	@PostMapping("/mvc/vl")
+	@GetMapping("/mvc/vl")
 	public String chat() {
 		return "NotYet";
+	}
+	@PostMapping("/mvc/vl/get")
+	public String getPlaylist(@RequestParam String song,HttpSession session,ModelMap modelMap) {
+		System.out.println("THE DATE FROM PARAM " + song);
+		String accesstoken=(String)session.getAttribute("webtoken");
+		HttpHeaders headers=new HttpHeaders();
+		headers.set("Accept", "application/json");
+		headers.setBearerAuth(accesstoken);
+		
+		Playlist ply=new Playlist();
+		ply.setSong(song);
+		HttpEntity <Playlist>httpEntity=new HttpEntity<>(ply,headers);
+		
+		ResponseEntity<List> res=temp.exchange(url+"api/playlist/song", HttpMethod.POST, httpEntity, List.class);
+		List<Playlist>songs=res.getBody();
+		modelMap.addAttribute("songs", songs);
+		
+		return "Play";
 	}
 }

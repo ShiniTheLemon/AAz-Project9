@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Global Topics</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
@@ -127,6 +127,7 @@
 	        <ul class="nav navbar-nav navbar-right">
 	          <li>
 	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
+	          <li><a th:href="@{/logout}">LogOut</a></li>
 	        
 <!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
 	        </ul>
@@ -141,8 +142,8 @@
 						  </div>
 					</div>  
 				<table>
-					<tr><a th:href="@{/mvc/likedislike(choice=0,id=${info.pid})}" class="glyphicon glyphicon-thumbs-up" th:text="${info.likes}"></a></tr>
-					<tr><a th:href="@{/mvc/likedislike(choice=1,id=${info.pid})}" class="glyphicon glyphicon-thumbs-down" th:text="${info.dislikes}"></a></tr>
+					<tr><a th:href="@{/mvc/likedislike(choice=0,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-up" th:text="${info.likes}"></a></tr>
+					<tr><a th:href="@{/mvc/likedislike(choice=1,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-down" th:text="${info.dislikes}"></a></tr>
 					<tr><a th:href="@{/mvc/all/comments(post_id=${info.pid})}" class="glyphicon glyphicon-comment"></a></tr>
 				</table>
 		

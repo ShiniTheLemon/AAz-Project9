@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.sloth.net.entities.User_info;
 import com.sloth.net.entities.Users;
 import com.sloth.net.pojo.UsersJwt;
+import com.sloth.net.repo.UserInfoRepository;
 import com.sloth.net.repo.UserRepository;
 import com.sloth.net.securityconfig.Jwt;
 @Service
@@ -25,7 +27,11 @@ PasswordEncoder passwordEncoder;
 AuthenticationManager authManager;
 @Autowired
 Jwt jwt;
+@Autowired
+UserInfoRepository infoRepo;
 
+
+///call repo to get user id
 	@Override
 	public Users signUp(Users user) {
 		// TODO Auto-generated method stub
@@ -33,7 +39,15 @@ Jwt jwt;
 		//encodes password before saving user object
 		user.setPassword(encodePassword(user.getPassword()));
 		
-		return userRepo.save(user);
+		Users userObj= userRepo.save(user);
+		System.out.println("USER OBJECT CONTENTS "+userObj);
+		int userid=userObj.getUser_id();
+		String user_name=userObj.getEmail();
+		User_info infoObj=new User_info();
+		infoObj.setUser_name(user_name);
+		infoObj.setUserid(userid);
+		infoRepo.save(infoObj);
+		return userObj;
 	}
 	private String encodePassword(String Password) {
 		return passwordEncoder.encode(Password);
@@ -44,6 +58,11 @@ Jwt jwt;
 		Authentication auth=authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail()
 				,user.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(auth);
+		User_info info=new User_info();
+		
+		info.setUserid(user.getUser_id());
+		info.setUser_name(user.getEmail());
+		infoRepo.save(info);
 	}
 	@Override
 	public  UsersJwt loggedInUser(String token) {

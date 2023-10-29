@@ -6,7 +6,7 @@ import java.util.Optional;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.sloth.net.pojo.MessageStatus;
+//import com.sloth.net.pojo.MessageStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,5 +24,5 @@ public class Messages {
 	private int recipientid;
 	private String  content;
 	private Time time;
-	private MessageStatus status;
+	//private MessageStatus status;
 }

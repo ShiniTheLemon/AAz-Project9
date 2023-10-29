@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+<title> Playlist</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<style>
+	  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
+		
+		body {
+		  overflow-x: hidden;
+		  font-family: 'Roboto', sans-serif;
+		  font-size: 16px;
+		}
+		
+		/* Toggle Styles */
+		
+		#viewport {
+		  padding-left: 250px;
+		  -webkit-transition: all 0.5s ease;
+		  -moz-transition: all 0.5s ease;
+		  -o-transition: all 0.5s ease;
+		  transition: all 0.5s ease;
+		}
+		
+		#content {
+		  width: 100%;
+		  position: relative;
+		  margin-right: 0;
+		}
+		
+		/* Sidebar Styles */
+		
+		#sidebar {
+		  z-index: 1000;
+		  position: fixed;
+		  left: 250px;
+		  width: 250px;
+		  height: 100%;
+		  margin-left: -250px;
+		  overflow-y: auto;
+		  background: #37474F;
+		  -webkit-transition: all 0.5s ease;
+		  -moz-transition: all 0.5s ease;
+		  -o-transition: all 0.5s ease;
+		  transition: all 0.5s ease;
+		}
+		
+		#sidebar header {
+		  background-color: #263238;
+		  font-size: 20px;
+		  line-height: 52px;
+		  text-align: center;
+		}
+		
+		#sidebar header a {
+		  color: #fff;
+		  display: block;
+		  text-decoration: none;
+		}
+		
+		#sidebar header a:hover {
+		  color: #fff;
+		}
+		
+		#sidebar .nav{
+		  
+		}
+		
+		#sidebar .nav a{
+		  background: none;
+		  border-bottom: 1px solid #455A64;
+		  color: #CFD8DC;
+		  font-size: 14px;
+		  padding: 16px 24px;
+		}
+		
+		#sidebar .nav a:hover{
+		  background: none;
+		  color: #ECEFF1;
+		}
+		
+		#sidebar .nav a i{
+		  margin-right: 16px;
+		}
+</style>
+</head>
+<body>
+
+	<div id="viewport">
+	  <!-- Sidebar -->
+	  <div id="sidebar">
+	    <header>
+	      <a href="#">Sloth-Topics</a>
+	    </header>
+	    <ul class="nav">
+	      <li>
+	        <a th:href="@{/mvc/all/profiles}">
+	          <i class="zmdi zmdi-view-dashboard"></i>Home
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/my/topic}">
+	          <i class="zmdi zmdi-account-box"></i>My Topics
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/global/topics}">
+	          <i class="zmdi zmdi-globe-alt"></i>Topics
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/vl}" style="color: red; ">
+	          <i class="zmdi zmdi-comments"></i> VannillaLemonaide
+	        </a>
+	      </li>
+	    </ul>
+	  </div>
+	  <!-- Content -->
+	  <div id="content">
+	    <nav class="navbar navbar-default">
+	      <div class="container-fluid">
+	        <ul class="nav navbar-nav navbar-right">
+	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
+	          <li><a th:href="@{/logout}">LogOut</a></li>
+<!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
+	        </ul>
+	      </div>
+	    </nav>
+	    <div class="container-fluid" th:each="info: ${songs}">
+	    <form th:action="@{/mvc/vl/get}" method="post">
+		    <div class="container-fluid"  >
+		
+		      			<div class="card" >
+							  <div class="card-header">
+								<h5 class="text-success">
+									#allhailthelemonlord,#trustmeiknowicanexplainthisisnotwhatitlookslike,#demonfuel,#mamabear
+								</h5>
+								<h6>Now Playing:</h6>
+								<h6 th:text="${info.song}"></h6>
+
+								</div>
+							    <input type="text" th:name="song" placeholder="Type in lowercase!!!" class="form-control">
+							    <input type="submit" value="Search" class="form-control">
+						</div>  
+
+		    </div>
+	   </form>
+
+					<audio controls autoplay >
+
+					  <source th:src="@{${info.url}}" type="audio/mpeg">
+					</audio>
+<!-- 					<img alt="" th:src="@{/music/images.jpg}"> -->
+	     <p>
+	     				NOW CLOSE YOUR EYES AND IMAGINE LISTENING TO THIS SWEET SICK BEAT WITH YOUR BEST BUD.
+				    	I'LL DO YOU ONE BETTER,YOU CREATE  YOUR OWN PLAYLIST AND SEND THE LINK TO YOUR
+				    	FRIEND AND YOU ARE ABLE TO LISTEN TO IT TOGETHER...<H4>in real time!!!!</H4>
+	     </p>
+	     </p>
+	     				WOULDN'T THAT BE AWESOME?
+	     				OUR 'LEAD SOFTWARE ARCHITECT' IS HARD AT WORK TRYING TO MAKE THAT HAPPEN!
+	     				IF YOU HAVE ANY SUGESTIONS(which will be ignored but don't let that stop you)
+	     				OR JUST WANT TO SAY HELLO YOU CAN EAMIL [shinigaminakamora@gmail.com]
+	     </p>
+	     <p>
+	     				REMEMBER TO TELL YOUR FRIEND TO TELL THEIR FRIEND ABOUT SLOTH-TOPICS.
+	     				DON'T WORRY IF YOU DON'T HAVE ANY FRIENDS, JUST MAKE SOME NEW ONES AND
+	     				TELL THEM ABOUT SLOTH-TOPICS
+	     </p>
+	    </div>
+	  </div>
+	</div>
+</body>
+</html>
