@@ -41,10 +41,14 @@ UserInfoRepository infoRepo;
 		
 		Users userObj= userRepo.save(user);
 		System.out.println("USER OBJECT CONTENTS "+userObj);
-		int userid=userObj.getUser_id();
-		String user_name=userObj.getEmail();
+		String email=userObj.getEmail();
+		
+		int userid=userRepo.findUsersByEmail(email).get().getUser_id();
+		System.out.println("USER ID OBTAINTED "+userid);
+		
+		
 		User_info infoObj=new User_info();
-		infoObj.setUser_name(user_name);
+		infoObj.setUser_name(email);
 		infoObj.setUserid(userid);
 		infoRepo.save(infoObj);
 		return userObj;
