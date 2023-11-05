@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+<title>My Topics</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+<style>
+	  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
+		
+		body {
+		  overflow-x: hidden;
+		  font-family: 'Roboto', sans-serif;
+		  font-size: 16px;
+		}
+		
+		/* Toggle Styles */
+		
+		#viewport {
+		  padding-left: 250px;
+		  -webkit-transition: all 0.5s ease;
+		  -moz-transition: all 0.5s ease;
+		  -o-transition: all 0.5s ease;
+		  transition: all 0.5s ease;
+		}
+		
+		#content {
+		  width: 100%;
+		  position: relative;
+		  margin-right: 0;
+		}
+		
+		/* Sidebar Styles */
+		
+		#sidebar {
+		  z-index: 1000;
+		  position: fixed;
+		  left: 250px;
+		  width: 250px;
+		  height: 100%;
+		  margin-left: -250px;
+		  overflow-y: auto;
+		  background: #37474F;
+		  -webkit-transition: all 0.5s ease;
+		  -moz-transition: all 0.5s ease;
+		  -o-transition: all 0.5s ease;
+		  transition: all 0.5s ease;
+		}
+		
+		#sidebar header {
+		  background-color: #263238;
+		  font-size: 20px;
+		  line-height: 52px;
+		  text-align: center;
+		}
+		
+		#sidebar header a {
+		  color: #fff;
+		  display: block;
+		  text-decoration: none;
+		}
+		
+		#sidebar header a:hover {
+		  color: #fff;
+		}
+		
+		#sidebar .nav{
+		  
+		}
+		
+		#sidebar .nav a{
+		  background: none;
+		  border-bottom: 1px solid #455A64;
+		  color: #CFD8DC;
+		  font-size: 14px;
+		  padding: 16px 24px;
+		}
+		
+		#sidebar .nav a:hover{
+		  background: none;
+		  color: #ECEFF1;
+		}
+		
+		#sidebar .nav a i{
+		  margin-right: 16px;
+		}
+</style>
+</head>
+<body>
+
+	<div id="viewport">
+	  <!-- Sidebar -->
+	  <div id="sidebar">
+	    <header>
+	      <a href="#">Sloth-Topics</a>
+	    </header>
+	    <ul class="nav">
+	      <li>
+	        <a th:href="@{/mvc/all/profiles}">
+	          <i class="zmdi zmdi-view-dashboard"></i>Home
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/my/topic}">
+	          <i class="zmdi zmdi-account-box"></i>My Topics
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/global/topics}">
+	          <i class="zmdi zmdi-globe-alt"></i>Topics
+	        </a>
+	      </li>
+	      <li>
+	        <a th:href="@{/mvc/vl}" style="color: red; ">
+	          <i class="zmdi zmdi-comments"></i> VannillaLemonaide
+	        </a>
+	      </li>
+	    </ul>
+	  </div>
+	  <!-- Content -->
+	  <div id="content">
+	    <nav class="navbar navbar-default">
+	      <div class="container-fluid">
+	        <ul class="nav navbar-nav navbar-right">
+	          <li>
+	          <li><a th:href="@{/mvc/global/profiles}">My Bio</a></li>
+	          <li><a th:href="@{/logout}">LogOut</a></li>
+	        
+<!-- 	          <li><a href="#"><span>[[${#request.remoteUser}]]</span></a></li> -->
+	        </ul>
+	      </div>
+	    </nav>
+	    <a th:href="@{/mvc/get/topic}"><button>New Topic</button></a>
+	    
+		    <div class="container-fluid" th:each="info: ${topics}">
+		<form th:action="@{/mvc/edit/topic}" method="post">
+		      			<div class="card" >
+							  <div class="card-header">
+							    <h3 th:text="${info.topic}" class="text-warning"></h3>
+							    <textarea th:name="post" th:value="${info.post}" th:text="${info.post}" class="form-control" rows="3" cols="3"></textarea>
+							    <input type="hidden" th:name="pid" th:value="${info.pid}">
+							    <input type="submit" value="Save" class="form-control" >
+							  </div>
+			  
+
+						</div>  
+		 </form>
+		 		<a th:href="@{/mvc/delete/topic(post_id=${info.pid})}" class="form-control" ><button>Delete</button></a> 
+					<table>
+						<tr><a th:href="@{/mvc/likedislike(choice=0,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-up" th:text="${info.likes}"></a></tr>
+						<tr><a th:href="@{/mvc/likedislike(choice=1,id=${info.pid},x=${info.pid})}" class="glyphicon glyphicon-thumbs-down" th:text="${info.dislikes}"></a></tr>
+						<tr><a th:href="@{/mvc/all/comments(post_id=${info.pid})}" class="glyphicon glyphicon-comment"></a></tr>
+					</table>
+			
+		    </div>
+
+	  </div>
+	</div>
+</body>
+</html>
